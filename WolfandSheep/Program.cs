@@ -7,7 +7,7 @@ namespace WolfandSheep
     {
         int sideNumb;
         //Just for testing. I don't know if I can use Lists
-        string[] darkTiles = new string[]{null,null,null,null,null,null,null
+        Tile[] darkTiles = new Tile[]{null,null,null,null,null,null,null
         ,null,null,null,null,null,null,null,null,null,};
 
 
@@ -22,26 +22,39 @@ namespace WolfandSheep
         }
 
 
-
         /// <summary>
         ///  Creates the list of all dark tiles based on the chosen size 
         ///  of the board  
         /// </summary>
         public void CreateBoard(int sideNumb)
         {           
-            int tilenumb = 0;
+            int totalDarkTiles = (int)(MathF.Pow(sideNumb/2,2));
+            int tilenumb = 1;
             for(int i = 0; i < (sideNumb/2); i++)
             {
+                bool inicialPos = false;
+                int state = 0;
+
                 for(int j = 0; j < (sideNumb/2); j++)
-                {
-                    this.darkTiles[tilenumb] = "" + tilenumb;
+                {        
+                    
+                    if(i == 0)
+                    {
+                        inicialPos = true;
+                        state = 1;
+                    }
+
+
+                    int x = sideNumb/2 - (j+1);
+                    int y = i; 
+
+                    this.darkTiles[ totalDarkTiles - tilenumb] = new Tile(x, y, state, inicialPos);
                     tilenumb++;
                 }
             }
 
             //this.AssignNeighbours();
         }
-
 
 
         /// <summary>
@@ -52,8 +65,6 @@ namespace WolfandSheep
 
         }
 
-
-
         /// <summary>
         /// Constructs the visual game board in accordance with wolf, sheep, and
         /// gameBoard variables (SUBJECT TO CHANGE)
@@ -61,28 +72,84 @@ namespace WolfandSheep
         public void ShowBoard()
         {
             
-            foreach(string x in darkTiles)
+            foreach(Tile x in darkTiles)
             {
-                Console.Write(x);
+                x.PrintTileImage();
+
+                int finalTile = (sideNumb/2) - 1;
+
+                if(x.x == finalTile && x.y % 2 == 1)
+                {
+                     Console.WriteLine(""); 
+                     Console.WriteLine("");
+                     Console.WriteLine("");
+                }
+
+                
+
+                if(x.x != finalTile || x.y % 2 != 0)
+                {
+                    Console.Write("    |");
+                }
+                else
+                {
+                    Console.WriteLine(""); 
+                    Console.WriteLine("");
+                    Console.WriteLine(""); 
+                }
             }
-            Console.WriteLine("");
+
+            Console.WriteLine(""); 
+            
         }
 
     }
 
 
 
-
     class Tile
     {
-        private static bool isInitialPos;
+      
+        bool isInitialPos;
 
         //0 - empty / 1 - sheep / 2 - wolf 
         int tileState;
+        public int x, y;
         Tile[] neighbours;
         
+        public Tile(int x, int y, int state, bool isInitialPos = false)
+        {     
+            this.x = x;
+            this.y = y;
+            this.tileState = state;
+            this.isInitialPos = isInitialPos;
+        }
+
+ 
+        
+        public void PrintTileImage()
+        {
+            switch(this.tileState)
+            {
+                case 0:
+                    Console.Write("----|");
+                    break;
+                case 1:
+                    Console.Write("MEEH|");
+                    break;
+                case 2:
+                    Console.Write("WOOF|");
+                    break;
+                default:
+                    Console.Write("If u are seeing this I did a bad job");
+                    break;
+            }
+        }
+
 
     }
+
+
 
     class Program
     {
