@@ -65,8 +65,6 @@ namespace WolfandSheep
         /// </summary>
         private static void GameTutorial()
         {
-            string input = "";
-
             Console.WriteLine("------------------------------");
             Console.WriteLine("|       Introduction         |");
             Console.WriteLine("------------------------------");
@@ -134,9 +132,10 @@ namespace WolfandSheep
             Console.WriteLine("|     Winning Conditions     |");
             Console.WriteLine("------------------------------");
             Console.WriteLine("|In order for the sheep to   |");
-            Console.WriteLine("|the game, they need to trap |");
-            Console.WriteLine("|the wolf so that he cannot  |");
-            Console.WriteLine("|move anymore, like this:    |");
+            Console.WriteLine("|win the game, they need to  |");
+            Console.WriteLine("|trap the wolf so that he    |");
+            Console.WriteLine("|cannot move anymore, like   |");
+            Console.WriteLine("|this:                       |");
 
             // Show an example Game Board of an trapped wolf also with the class
 
@@ -148,7 +147,16 @@ namespace WolfandSheep
 
             // Show an example Game Board of the wolf winning.
 
-            
+            if (!ContinueText()) return;
+
+            Console.WriteLine("------------------------------");
+            Console.WriteLine("|           Control          |");
+            Console.WriteLine("------------------------------");
+            Console.WriteLine("|Now that the rules are all  |");
+            Console.WriteLine("|explained, the game's       |");
+            Console.WriteLine("|controls, for both the      |");
+            Console.WriteLine("|wolf and the sheep, will be |");
+            Console.WriteLine("|explained.                  |");
 
         }
 
@@ -158,6 +166,7 @@ namespace WolfandSheep
         /// </summary>
         private static bool ContinueText()
         {
+            // Create a input string
             string input = "";
             
             Console.WriteLine("-----------------------------");
@@ -165,8 +174,11 @@ namespace WolfandSheep
             Console.WriteLine("|  or anything else to quit. |");
             Console.WriteLine("-----------------------------");
 
+            // Read the user's command and store it on the string
             input = Console.ReadLine();
 
+            // Verifies if the input is equal to 'c', and if so returns true,
+            // on the contrary returning false
             if (input == "c") return true;
             else return false;
 
