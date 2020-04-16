@@ -31,7 +31,6 @@ namespace WolfandSheep
             int totalDarkTiles = (int)(MathF.Pow(sideNumb/2,2));
             int tilenumb = 0;
 
-
             //
             for(int i = 0; i < (sideNumb/2); i++)
             {
@@ -64,69 +63,124 @@ namespace WolfandSheep
 
 
         /// <summary>
-        /// 
+        /// Assigns the neighbours to every tile 
         /// </summary>
         public void AssignNeighbours()
         {           
             foreach(Tile t in darkTiles)
-            {
-                int tempX = 0;
-                int tempY = 0;
-                int tempNumb = 0;
-
-                int tileX = t.x;
-                int tileY = t.y; 
-                
-
-                if(tileY % 2 == 1)
+            {                   
+                if(t.y % 2 == 1)
                 {
                     //Get left/next tile
-                    tempX = t.x + 1;
-                    tempY = t.y - 1;
-                    if(tempY >= 0 && tempY < sideNumb 
-                    && tempX >= 0 && tempX < sideNumb)
-                    {
-                      
-                        tempNumb = tempX + (tempY * sideNumb/2);
-                        t.neighbours[0] = this.darkTiles[tempNumb];
-                        
-                    }
+                    GetNeighbour(new int[]{1,0}, t);
 
                     //Get right/next tile
+                    GetNeighbour(new int[]{1,1}, t);
 
                     //Get left/previous tile
+                    GetNeighbour(new int[]{1,2}, t);
 
                     //Get right/previous tile
+                    GetNeighbour(new int[]{1,3}, t);
                 }
                 else
-                {                    
+                {           
                     //Get left/next tile
-                    tempX = t.x + 1;
-                    tempY = t.y;
-                    if(tempY >= 0 && tempY > sideNumb 
-                    && tempX >= 0 && tempX > sideNumb){
-                        Console.WriteLine(t.x + " , " + t.y);
-                        tempNumb = tempX + (tempY * sideNumb/2);
-                        t.neighbours[0] = darkTiles[tempNumb];
-                        //Console.WriteLine("> " + t.neighbours[0].x + " , " + t.neighbours[0].y);
-                    }
+                    GetNeighbour(new int[]{0,0}, t);
 
                     //Get right/next tile
+                    GetNeighbour(new int[]{0,1}, t);
 
                     //Get left/previous tile
+                    GetNeighbour(new int[]{0,2}, t);
 
                     //Get right/previous tile
-
+                    GetNeighbour(new int[]{0,3}, t);
                 }
-
-
             }
         }
 
-        
+
+        /// <summary>
+        /// Decides the neighbour that is in the chosen position
+        /// </summary>
+        public void GetNeighbour(int[] typeOfNeihgbour, Tile currentTile)
+        {
+            int tempNumb;
+            
+            
+            int xInteraction = 0;
+            int yInteraction = 0;
+
+            //Decides how to interact with the coordinates to 
+            //get the selected neighbour
+            
+            if(typeOfNeihgbour[0] == 0)
+            {
+                switch(typeOfNeihgbour[1])
+                {
+                    case 0:
+                        yInteraction = 1;
+                        break;
+                    case 1:
+                        xInteraction = 1;              
+                        yInteraction = 1;
+                        break;
+                    case 2:
+                        yInteraction = -1;
+                        break;
+                    case 3:
+                        xInteraction = 1;
+                        yInteraction = -1;
+                        break;
+                }
+            }
+            else
+            {               
+                switch(typeOfNeihgbour[1])
+                {
+                    case 0:
+                        xInteraction = -1;
+                        yInteraction = 1;
+                        break;
+                    case 1:        
+                        yInteraction = 1;
+                        break;
+                    case 2:
+                        xInteraction = -1;
+                        yInteraction = -1;
+                        break;
+                    case 3:
+                        yInteraction = -1;
+                        break;
+                }
+
+            }
 
 
+            int tempX = currentTile.x + xInteraction;
+            int tempY = currentTile.y + yInteraction;
+            
 
+            if(tempY >= 0 && tempY < sideNumb/2 && tempX >= 0 && tempX < sideNumb/2)
+            {
+                
+                tempNumb = ConvertToArrayNumb(tempX, tempY);
+                currentTile.neighbours[typeOfNeihgbour[1]] = darkTiles[tempNumb];                     
+            }
+        }
+
+
+        /// <summary>
+        /// Converts the coordinates of a 2 dimensional array to
+        /// the index of an 1 dimensional array. 
+        /// Only works with certain arrays 
+        /// </summary>
+        public int ConvertToArrayNumb(int x, int y)
+        {
+            int arrayNumb = x + (y * sideNumb/2);
+            return arrayNumb;
+        } 
 
 
         /// <summary>
@@ -184,9 +238,7 @@ namespace WolfandSheep
         
         public void PrintTileImage()
         {
-            Console.Write(x + "  " + y);
-            return;
-            /*switch(this.tileState)
+            switch(this.tileState)
             {
                 case 0:
                     Console.Write("----|");
@@ -200,7 +252,8 @@ namespace WolfandSheep
                 default:
                     Console.Write("If u are seeing this I did a bad job");
                     break;
-            }*/
+            }
+        
         }
 
 
@@ -222,9 +275,6 @@ namespace WolfandSheep
 
             Board ola = new Board(8);
             ola.ShowBoard();
-
-            Console.WriteLine(">"  + ola.darkTiles[14].neighbours[0]);
-            Console.WriteLine(ola.darkTiles[14].neighbours[0]);
 
             // Starts a loop that will continuously observe the player's inputs
             // and will end when 'q' is selected.
