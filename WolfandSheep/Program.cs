@@ -7,9 +7,8 @@ namespace WolfandSheep
     {
         int sideNumb;
         //Just for testing. I don't know if I can use Lists
-        Tile[] darkTiles = new Tile[]{null,null,null,null,null,null,null
+        public Tile[] darkTiles = new Tile[]{null,null,null,null,null,null,null
         ,null,null,null,null,null,null,null,null,null,};
-
 
 
         public Board(int sideNumb)
@@ -28,32 +27,39 @@ namespace WolfandSheep
         /// </summary>
         public void CreateBoard(int sideNumb)
         {           
+            //Total number of dark tiles in this board
             int totalDarkTiles = (int)(MathF.Pow(sideNumb/2,2));
-            int tilenumb = 1;
+            int tilenumb = 0;
+
+
+            //
             for(int i = 0; i < (sideNumb/2); i++)
             {
                 bool inicialPos = false;
+                //Empty, Wolf or Sheep maybe change to enum
                 int state = 0;
 
                 for(int j = 0; j < (sideNumb/2); j++)
                 {        
-                    
-                    if(i == 0)
+                    //Sheep spawn in the first line 
+                    if(i == (sideNumb/2 - 1))
                     {
                         inicialPos = true;
                         state = 1;
                     }
 
-
-                    int x = sideNumb/2 - (j+1);
+                    int x = j;//sideNumb/2 - (j+1);
                     int y = i; 
 
-                    this.darkTiles[ totalDarkTiles - tilenumb] = new Tile(x, y, state, inicialPos);
+                    //Create new tile and add it to the list of dark tiles
+                    this.darkTiles[tilenumb] = new Tile(x, y, state, inicialPos);
+
+                    //increment tile numb
                     tilenumb++;
                 }
             }
 
-            //this.AssignNeighbours();
+            this.AssignNeighbours();
         }
 
 
@@ -62,8 +68,66 @@ namespace WolfandSheep
         /// </summary>
         public void AssignNeighbours()
         {           
+            foreach(Tile t in darkTiles)
+            {
+                int tempX = 0;
+                int tempY = 0;
+                int tempNumb = 0;
 
+                int tileX = t.x;
+                int tileY = t.y; 
+                
+
+                if(tileY % 2 == 1)
+                {
+                    //Get left/next tile
+                    tempX = t.x + 1;
+                    tempY = t.y - 1;
+                    if(tempY >= 0 && tempY < sideNumb 
+                    && tempX >= 0 && tempX < sideNumb)
+                    {
+                      
+                        tempNumb = tempX + (tempY * sideNumb/2);
+                        t.neighbours[0] = this.darkTiles[tempNumb];
+                        
+                    }
+
+                    //Get right/next tile
+
+                    //Get left/previous tile
+
+                    //Get right/previous tile
+                }
+                else
+                {                    
+                    //Get left/next tile
+                    tempX = t.x + 1;
+                    tempY = t.y;
+                    if(tempY >= 0 && tempY > sideNumb 
+                    && tempX >= 0 && tempX > sideNumb){
+                        Console.WriteLine(t.x + " , " + t.y);
+                        tempNumb = tempX + (tempY * sideNumb/2);
+                        t.neighbours[0] = darkTiles[tempNumb];
+                        //Console.WriteLine("> " + t.neighbours[0].x + " , " + t.neighbours[0].y);
+                    }
+
+                    //Get right/next tile
+
+                    //Get left/previous tile
+
+                    //Get right/previous tile
+
+                }
+
+
+            }
         }
+
+        
+
+
+
+
 
         /// <summary>
         /// Constructs the visual game board in accordance with wolf, sheep, and
@@ -71,32 +135,28 @@ namespace WolfandSheep
         /// </summary>
         public void ShowBoard()
         {
-            
+
             foreach(Tile x in darkTiles)
             {
-                x.PrintTileImage();
-
-                int finalTile = (sideNumb/2) - 1;
-
-                if(x.x == finalTile && x.y % 2 == 1)
+                
+                //First tile in a line therefor start a new line 
+                if(x.x == 0)
                 {
                      Console.WriteLine(""); 
                      Console.WriteLine("");
                      Console.WriteLine("");
                 }
-
                 
-
-                if(x.x != finalTile || x.y % 2 != 0)
-                {
+                if(x.y % 2 == 1)
+                {                 
+                    x.PrintTileImage();
                     Console.Write("    |");
                 }
-                else
+                if(x.y % 2 == 0)
                 {
-                    Console.WriteLine(""); 
-                    Console.WriteLine("");
-                    Console.WriteLine(""); 
-                }
+                    Console.Write("    |");
+                    x.PrintTileImage();
+                }               
             }
 
             Console.WriteLine(""); 
@@ -105,17 +165,14 @@ namespace WolfandSheep
 
     }
 
-
-
     class Tile
     {
-      
         bool isInitialPos;
 
         //0 - empty / 1 - sheep / 2 - wolf 
         int tileState;
         public int x, y;
-        Tile[] neighbours;
+        public Tile[] neighbours = new Tile[]{null,null,null,null};
         
         public Tile(int x, int y, int state, bool isInitialPos = false)
         {     
@@ -124,12 +181,12 @@ namespace WolfandSheep
             this.tileState = state;
             this.isInitialPos = isInitialPos;
         }
-
- 
         
         public void PrintTileImage()
         {
-            switch(this.tileState)
+            Console.Write(x + "  " + y);
+            return;
+            /*switch(this.tileState)
             {
                 case 0:
                     Console.Write("----|");
@@ -143,12 +200,11 @@ namespace WolfandSheep
                 default:
                     Console.Write("If u are seeing this I did a bad job");
                     break;
-            }
+            }*/
         }
 
 
     }
-
 
 
     class Program
@@ -166,6 +222,9 @@ namespace WolfandSheep
 
             Board ola = new Board(8);
             ola.ShowBoard();
+
+            Console.WriteLine(">"  + ola.darkTiles[14].neighbours[0]);
+            Console.WriteLine(ola.darkTiles[14].neighbours[0]);
 
             // Starts a loop that will continuously observe the player's inputs
             // and will end when 'q' is selected.
