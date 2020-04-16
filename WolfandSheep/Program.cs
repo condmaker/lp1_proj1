@@ -51,7 +51,8 @@ namespace WolfandSheep
                     int y = i; 
 
                     //Create new tile and add it to the list of dark tiles
-                    this.darkTiles[tilenumb] = new Tile(x, y, state, inicialPos);
+                    this.darkTiles[tilenumb] = 
+                    new Tile(x, y, state, inicialPos);
 
                     //increment tile numb
                     tilenumb++;
@@ -162,7 +163,8 @@ namespace WolfandSheep
             int tempY = currentTile.y + yInteraction;
             
 
-            if(tempY >= 0 && tempY < sideNumb/2 && tempX >= 0 && tempX < sideNumb/2)
+            if(tempY >= 0 && tempY < sideNumb/2 
+            && tempX >= 0 && tempX < sideNumb/2)
             {
                 
                 tempNumb = ConvertToArrayNumb(tempX, tempY);
@@ -182,7 +184,7 @@ namespace WolfandSheep
             return arrayNumb;
         } 
 
-
+                                                                      
         /// <summary>
         /// Constructs the visual game board in accordance with wolf, sheep, and
         /// gameBoard variables (SUBJECT TO CHANGE)
@@ -262,11 +264,6 @@ namespace WolfandSheep
 
     class Program
     {
-
-        private static Tile[] darkTiles;
-        private static Board defaultBoard;
-
-
         static void Main(string[] args)
         {
             // Prints the main menu and starts the 'input' string
@@ -495,13 +492,5 @@ namespace WolfandSheep
 
         }
 
-        /// <summary>
-        /// Constructs the visual game board in accordance with wolf, sheep, and
-        /// gameBoard variables (SUBJECT TO CHANGE)
-        /// </summary>
-        private static void ShowBoard()
-        {
-
-        }
     }
 }
