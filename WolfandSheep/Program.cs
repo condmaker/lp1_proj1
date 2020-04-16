@@ -157,6 +157,51 @@ namespace WolfandSheep
             Console.WriteLine("|controls, for both the      |");
             Console.WriteLine("|wolf and the sheep, will be |");
             Console.WriteLine("|explained.                  |");
+            Console.WriteLine("|                            |");
+            Console.WriteLine("|As shown on the boards above|");
+            Console.WriteLine("|each line will have a number|");
+            Console.WriteLine("|and each column a letter    |");
+            Console.WriteLine("|assigned to them. By using  |");
+            Console.WriteLine("|the move <column><line>     |");
+            Console.WriteLine("|command, you will be able to|");
+            Console.WriteLine("|move a specific character to|");
+            Console.WriteLine("|a desired tile, like this:  |\n");
+            Console.WriteLine(
+                "move B3\n");
+            Console.WriteLine("|If the character can move to|");
+            Console.WriteLine("|That place, the game will   |");
+            Console.WriteLine("|perform the action and end  |");
+            Console.WriteLine("|your turn. If the game does |");
+            Console.WriteLine("|not recognize the tile      |");
+            Console.WriteLine("|inputted, it will show      |");
+            Console.WriteLine("|the following error message:|\n");
+            Console.WriteLine("Unknown tile, please input again!\n");
+            Console.WriteLine("|...And if you cannot move   |");
+            Console.WriteLine("|to your selected tile:      |\n");
+            Console.WriteLine(
+                "You cannot move to this tile, please input again!\n");
+            Console.WriteLine("|If you're playing as the    |");
+            Console.WriteLine("|sheep, you need to do the   |");
+            Console.WriteLine("|select <column><line>       |");
+            Console.WriteLine("|command in order to choose  |");
+            Console.WriteLine("|the sheep that will move:   |\n");
+            Console.WriteLine(
+                "select C2\n");
+            Console.WriteLine("|The tile selected must have |");
+            Console.WriteLine("|a sheep on it!              |");
+            Console.WriteLine("|As for the wolf, since he is|");
+            Console.WriteLine("|by himself, he only needs to|");
+            Console.WriteLine("|perform the 'move' command. |");
+            Console.WriteLine("|One more thing before we    |");
+            Console.WriteLine("|wrap up: don't forget that  |");
+            Console.WriteLine("|in-game you can input the   |");
+            Console.WriteLine("|'q' key and enter as a      |");
+            Console.WriteLine("|command any time to quit the|");
+            Console.WriteLine("|game.                       |");
+            Console.WriteLine("------------------------------");
+            Console.WriteLine("|    You have returned to    |");
+            Console.WriteLine("|       the main menu.       |");
+            Console.WriteLine("------------------------------");
 
         }
 
