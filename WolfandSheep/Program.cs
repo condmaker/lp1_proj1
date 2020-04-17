@@ -3,33 +3,42 @@
 namespace WolfandSheep
 {
 
+    /// <summary>
+    /// Class that makes and manages everything related to the board, with the
+    /// exception of the Tiles, which has its own class
+    /// </summary>
     class Board
     {
-        int sideNumb;
-        //Just for testing. I don't know if I can use Lists
+        // Number of 'sides' in the board. Only supports 8x8
+        int sideNumb = 8;
+
+        // The array of tiles that make the board. While internally it is 
+        // considered as a single array, the player tackles it as a multi-
+        // dimensional one
         public Tile[] darkTiles = new Tile[]{null,null,null,null,null,null,null
-        ,null,null,null,null,null,null,null,null,null,};
+        ,null,null,null,null,null,null,null,null,null};
 
-
-        public Board(int sideNumb)
+        // The basic class constructor. Will construct the board
+        public Board()
         {     
-            if(sideNumb % 2 == 0)
-            {
-                this.sideNumb = sideNumb;
-                this.CreateBoard(sideNumb);
-            }
+            this.CreateBoard(this.sideNumb);
         }
 
         /// <summary>
-        /// 
+        /// With the coordinates of a tile on the board, it will obtain a Tile
+        /// class object with those same coordinates from the current board.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <returns></returns>
-        public Tile GetTileFromCoordinates(int x, int y)
+        /// <param name="x">The horizontal 'x' coordinate</param>
+        /// <param name="y">The vertical 'y' coordinate</param>
+        /// <returns>Tile class object</returns>
+        public Tile GetTile(int x, int y)
         {
+            // Creates the tile, empty
             Tile wantedTile = null;
+            // Converts the coords. to an array
             int wantedTileNumb = ConvertToArrayNumb(x,y);
+            // With the array, applies the correspondent tile on the board
+            // to wantedTile, and then returns it
             wantedTile = this.darkTiles[wantedTileNumb];
             return wantedTile;
         }
@@ -38,10 +47,13 @@ namespace WolfandSheep
         ///  Creates the list of all dark tiles based on the chosen size 
         ///  of the board  
         /// </summary>
+        /// <param name="sideNumb">Board size int</param>
         public void CreateBoard(int sideNumb)
         {           
-            //Total number of dark tiles in this board
+            // Will multiply the number by the power of two to obtain a 
+            // squared board (like 8x8, for example)
             int totalDarkTiles = (int)(MathF.Pow(sideNumb/2,2));
+            // Variable that will increment the tile list
             int tilenumb = 0;
 
             //
@@ -119,19 +131,24 @@ namespace WolfandSheep
 
 
         /// <summary>
-        /// Decides the neighbour that is in the chosen position
+        /// With a chosen tile and type of neighbour and a Tile
+        /// object it will get one of it's neighbours.
         /// </summary>
+        /// <param name="typeOfNeighbour">Array of ints</param>
+        /// <param name="currentTile">Tile object</param>
         public void GetNeighbour(int[] typeOfNeighbour, Tile currentTile)
         {
-            int tempNumb;
+            // Variable to store the coordinates of the neighbour
+            int tempNumb;            
             
-            
+            // Variables that will change depending on the neighbour type
             int xInteraction = 0;
             int yInteraction = 0;
 
-            //Decides how to interact with the coordinates to 
-            //get the selected neighbour
-            
+            // Depending on the type of neighbour (if its odd or even and then
+            // if it is the first -> fourth neighbour) will assign different 
+            // values to xInteraction and yInteraction, that will match 
+            // the wanted neighbour's coordinates correctly
             if(typeOfNeighbour[0] == 0)
             {
                 switch(typeOfNeighbour[1])
@@ -175,17 +192,18 @@ namespace WolfandSheep
 
             }
 
-
-
+            // Assigns the current neighbour's coordinates do tempX and tempY
             int tempX = currentTile.x + xInteraction;
             int tempY = currentTile.y + yInteraction;
             
             
-
+            // Verifies if neighbour is not impossible (if it does not go off 
+            // the map)
             if(tempY >= 0 && tempY < sideNumb/2 
             && tempX >= 0 && tempX < sideNumb/2)
             {
-                
+                // Converts the neighbour's coordinates to an int array and
+                // applies it to the selected tile's neighbour list
                 tempNumb = ConvertToArrayNumb(tempX, tempY);           
                 currentTile.neighbours[typeOfNeighbour[1]] = 
                 this.darkTiles[tempNumb];                     
@@ -198,6 +216,9 @@ namespace WolfandSheep
         /// the index of an 1 dimensional array. 
         /// Only works with certain arrays 
         /// </summary>
+        /// <param name="x">Horizontal 'x' coordinate</param>
+        /// <param name="y">Vertical 'y' coordinate</param>
+        /// <returns>The int index of the given array coords.</returns>
         public int ConvertToArrayNumb(int x, int y)
         {
             int arrayNumb = x + (y * sideNumb/2);
@@ -211,31 +232,49 @@ namespace WolfandSheep
         /// </summary>
         public void ShowBoard()
         {
-
-            foreach(Tile x in darkTiles)
+            Console.WriteLine("    1    2    3    4    5    6    7    8");
+            Console.WriteLine("  -----------------------------------------");
+            Console.Write("A |");
+            foreach(Tile t in darkTiles)
             {
-                
                 //First tile in a line therefor start a new line 
-                if(x.x == 0)
+                if(t.x == 0 && t.y != 0)
                 {
-                     Console.WriteLine(""); 
-                     Console.WriteLine("");
-                     Console.WriteLine("");
+                    Console.WriteLine("");
+                    switch (t.y)
+                    {
+                        case 1: 
+                            Console.WriteLine("B |\t\t\t\t\t  |");
+                            Console.Write("C"); 
+                            break;
+                        case 2: 
+                            Console.WriteLine("D |\t\t\t\t\t  |");
+                            Console.Write("E"); 
+                            break;
+                        case 3: 
+                            Console.WriteLine("F |\t\t\t\t\t  |"); 
+                            Console.Write("G"); 
+                            break;
+                    }
+                    
+                    Console.Write(" |");
                 }
                 
-                if(x.y % 2 == 1)
-                {                 
-                    x.PrintTileImage();
+                if(t.y % 2 == 1)
+                {            
+                    t.PrintTileImage();
                     Console.Write("    |");
                 }
-                if(x.y % 2 == 0)
+                if(t.y % 2 == 0)
                 {
                     Console.Write("    |");
-                    x.PrintTileImage();
-                }               
+                    t.PrintTileImage();
+                }         
+      
             }
 
-            Console.WriteLine(""); 
+            Console.WriteLine(
+                "\n  -----------------------------------------\n");
             
         }
 
@@ -350,10 +389,10 @@ namespace WolfandSheep
         {
             // Prints the main menu and starts the 'input' string
             MainScreen();
-            Board gameBoard = new Board(8);
+            Board gameBoard = new Board();
             string mainInput = "";
 
-
+            gameBoard.ShowBoard();
 
             // Starts a loop that will continuously observe the player's inputs
             // and will end when 'q' is selected.
