@@ -20,6 +20,20 @@ namespace WolfandSheep
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public Tile GetTileFromCoordinates(int x, int y)
+        {
+            Tile wantedTile = null;
+            int wantedTileNumb = ConvertToArrayNumb(x,y);
+            wantedTile = this.darkTiles[wantedTileNumb];
+            Console.WriteLine(this.darkTiles[wantedTileNumb].tileState);
+            return wantedTile;
+        }
 
         /// <summary>
         ///  Creates the list of all dark tiles based on the chosen size 
@@ -180,7 +194,7 @@ namespace WolfandSheep
         /// </summary>
         public int ConvertToArrayNumb(int x, int y)
         {
-            int arrayNumb = x + (y * sideNumb/2);
+            int arrayNumb = y + (x * sideNumb/2);
             return arrayNumb;
         } 
 
@@ -226,12 +240,12 @@ namespace WolfandSheep
         bool isInitialPos;
 
         //0 - empty / 1 - sheep / 2 - wolf 
-        int tileState;
+        public int tileState;
         public int x, y;
         public Tile[] neighbours = new Tile[]{null,null,null,null};
         
         public Tile(int x, int y, int state, bool isInitialPos = false)
-        {     
+        {    
             this.x = x;
             this.y = y;
             this.tileState = state;
@@ -257,12 +271,28 @@ namespace WolfandSheep
             }
         
         }
+    	
+        public bool CheckTileAvailability(Tile targetTile)
+        {
+            bool available = false;
+
+            if(targetTile.tileState == 0){available = true;}
+            
+            foreach(Tile n in this.neighbours)
+            {
+                if(n == targetTile)
+                {
+                    available = true;
+                }
+            }
+
+            return available;
+        }
+
+    }               
 
 
-    }
-
-
-    class Program
+    class Program              
     {
         static void Main(string[] args)
         {
@@ -272,6 +302,7 @@ namespace WolfandSheep
 
             Board ola = new Board(8);
             ola.ShowBoard();
+
 
             // Starts a loop that will continuously observe the player's inputs
             // and will end when 'q' is selected.
