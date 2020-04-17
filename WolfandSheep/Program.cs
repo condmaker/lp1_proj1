@@ -388,17 +388,14 @@ namespace WolfandSheep
         static void Main(string[] args)
         {
             // Prints the main menu and starts the 'input' string
-            MainScreen();
-            Board gameBoard = new Board();
+            MainScreen();     
             string mainInput = "";
-
-            gameBoard.ShowBoard();
 
             // Starts a loop that will continuously observe the player's inputs
             // and will end when 'q' is selected.
             while(mainInput != "q")
             {
-                mainInput = Console.ReadLine();
+                mainInput = Console.ReadLine().ToLower();
 
                 // The command list with all the functions
                 switch (mainInput)
@@ -408,6 +405,7 @@ namespace WolfandSheep
                         break;
 
                     case "s":
+                        GameStart();
                         break;
 
                     case "m":
@@ -444,150 +442,251 @@ namespace WolfandSheep
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        private static void GameStart()
+        {
+            // Creates the game board and a string that will store the input of
+            // both players
+            Board gameBoard = new Board();
+            string playersInput = null; 
+
+            // Shows the board to the player
+            gameBoard.ShowBoard();
+            
+            // Asks one of the players to select the wolf's position.
+            Console.WriteLine(
+                "PLAYER1, please select the position for the WOLF, "  +
+                "the character you will play as. You can only choose" +
+                "tiles from the A row. Input the command as:\n\n"     +
+                "choose <vertical>\n\n"+
+                "If you choose an invalid number on that row, the"    +
+                "will convert it to the highest possible number on"   +
+                "that row.\n");
+
+            while (true)
+            {
+                // Declaration of the array of coordinates that will be made by
+                // the player's input
+                int[] tileNumArray;
+                // Declaration of the variable that will store the index of
+                // the coordinates
+                int tileNum;
+
+                // Will store the player's input on the aforementioned variable,
+                // and then will split it in order to read each command easily
+                playersInput = Console.ReadLine();
+                string[] firstCommand = playersInput.Split(" ");
+                
+                // Leaves the function (needs work to leave program)
+                if (playersInput == "q") break;
+
+                // Observes the length and naming of the player's input, and
+                // deems it valid or not
+                if (firstCommand.Length == 1)
+                {
+                    Console.WriteLine("Not enough commands.");
+                    continue;
+                }
+                
+                if (firstCommand[0].ToLower() != "choose")
+                {
+                    Console.WriteLine(
+                        "Command not recognized. Input command as:\n" +
+                        "choose <tile>");
+                    continue;
+                }
+
+
+                tileNumArray = CoordToInt('A', firstCommand[1][0]);
+
+                tileNum = 
+                gameBoard.ConvertToArrayNumb(tileNumArray[0], tileNumArray[1]);
+
+                // Observes if tile is out of range
+                try
+                {
+                    gameBoard.darkTiles[tileNum].tileState = 2;
+                }
+                catch (System.IndexOutOfRangeException)
+                {
+                    Console.WriteLine(
+                        "Invalid Coordinate. Please look at the board and " +
+                        "input again.");
+                    continue;
+                }
+
+                gameBoard.ShowBoard();           
+            }
+            
+        }
+
+        private static int[] CoordToInt(char a, char b)
+        {
+            int xValue;
+            int yValue;
+
+            // Converts each char to their respective numbers in board 
+            // coordinates
+            xValue = (int)(MathF.Ceiling((float)(char.GetNumericValue(b)/ 2) - 1));
+            yValue = (int)(char.ToUpper(a) - 65);
+
+            Console.WriteLine("yv: " + yValue + " yx: " + xValue);
+
+            // Returns the int array with the coordinates
+            return new int[] {xValue, yValue};
+
+        }
+
+        /// <summary>
         /// Shows to the player how to play the game with a concise and interac-
         /// tive tutorial.
         /// </summary>
         private static void GameTutorial()
         {
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("|       Introduction         |");
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("|Welcome to WOLF AND SHEEP!  |");
-            Console.WriteLine("|                            |");
-            Console.WriteLine("|This is a multiplayer puzzle|");
-            Console.WriteLine("|game, where one player con- |");
-            Console.WriteLine("|trols 4 sheep, and the other|");
-            Console.WriteLine("|controls a wolf.            |");
+            while (true)
+            {
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("|       Introduction         |");
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("|Welcome to WOLF AND SHEEP!  |");
+                Console.WriteLine("|                            |");
+                Console.WriteLine("|This is a multiplayer puzzle|");
+                Console.WriteLine("|game, where one player con- |");
+                Console.WriteLine("|trols 4 sheep, and the other|");
+                Console.WriteLine("|controls a wolf.            |");
 
-            if (!ContinueText()) return;
+                if (!ContinueText()) break;
 
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("|        Basic Rules         |");
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("|There are only two ways to  |");
-            Console.WriteLine("|end the game: The wolf wins,|");
-            Console.WriteLine("|or the sheep win. But before|");
-            Console.WriteLine("|explaining how to win, you  |");
-            Console.WriteLine("|need to know how to play.   |");
-            Console.WriteLine("|                            |");
-            Console.WriteLine("|This game is played on a    |");
-            Console.WriteLine("|board, much like chess and  |");
-            Console.WriteLine("|checkers. The wolf is on the|");
-            Console.WriteLine("|'top' of the board, and the |");
-            Console.WriteLine("|4 sheep are on the bottom:  |");
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("|        Basic Rules         |");
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("|There are only two ways to  |");
+                Console.WriteLine("|end the game: The wolf wins,|");
+                Console.WriteLine("|or the sheep win. But before|");
+                Console.WriteLine("|explaining how to win, you  |");
+                Console.WriteLine("|need to know how to play.   |");
+                Console.WriteLine("|                            |");
+                Console.WriteLine("|This game is played on a    |");
+                Console.WriteLine("|board, much like chess and  |");
+                Console.WriteLine("|checkers. The wolf is on the|");
+                Console.WriteLine("|'top' of the board, and the |");
+                Console.WriteLine("|4 sheep are on the bottom:  |");
 
-            // Show the initial Game Board here with the class
+                // Show the initial Game Board here with the class
 
-            Console.WriteLine("|Much like those games too,  |");
-            Console.WriteLine("|there are turns between the |");
-            Console.WriteLine("|wolf and sheep player.      |");
-            Console.WriteLine("|The wolf will always play   |");
-            Console.WriteLine("|first at the start of the   |");
-            Console.WriteLine("|game, and furthermore, on   |");
-            Console.WriteLine("|the sheep player turn, he   |");
-            Console.WriteLine("|will only be able to move   |");
-            Console.WriteLine("|one sheep. Which one is up  |");
-            Console.WriteLine("|to the player.              |");
-            
-            if (!ContinueText()) return;
-            
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("|          Movement          |");
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("|Both the wolf and sheep can |");
-            Console.WriteLine("|only move diagonally.       |");
-            Console.WriteLine("|The sheep, however, can only|");
-            Console.WriteLine("|move forward in relation to |");
-            Console.WriteLine("|the board (in the player's  |");
-            Console.WriteLine("|perspective, it may be more |");
-            Console.WriteLine("|fitting to say they can only|");
-            Console.WriteLine("|move 'up'), which means they|");
-            Console.WriteLine("|can't go back if the wolf   |");
-            Console.WriteLine("|surpasses them.             |");
-            Console.WriteLine("|                            |");
-            Console.WriteLine("|The wolf, on the other hand,|");
-            Console.WriteLine("|can move forwards AND       |");
-            Console.WriteLine("|backwards, which means he   |");
-            Console.WriteLine("|can back off.               |");
+                Console.WriteLine("|Much like those games too,  |");
+                Console.WriteLine("|there are turns between the |");
+                Console.WriteLine("|wolf and sheep player.      |");
+                Console.WriteLine("|The wolf will always play   |");
+                Console.WriteLine("|first at the start of the   |");
+                Console.WriteLine("|game, and furthermore, on   |");
+                Console.WriteLine("|the sheep player turn, he   |");
+                Console.WriteLine("|will only be able to move   |");
+                Console.WriteLine("|one sheep. Which one is up  |");
+                Console.WriteLine("|to the player.              |");
+                
+                if (!ContinueText()) break;
+                
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("|          Movement          |");
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("|Both the wolf and sheep can |");
+                Console.WriteLine("|only move diagonally.       |");
+                Console.WriteLine("|The sheep, however, can only|");
+                Console.WriteLine("|move forward in relation to |");
+                Console.WriteLine("|the board (in the player's  |");
+                Console.WriteLine("|perspective, it may be more |");
+                Console.WriteLine("|fitting to say they can only|");
+                Console.WriteLine("|move 'up'), which means they|");
+                Console.WriteLine("|can't go back if the wolf   |");
+                Console.WriteLine("|surpasses them.             |");
+                Console.WriteLine("|                            |");
+                Console.WriteLine("|The wolf, on the other hand,|");
+                Console.WriteLine("|can move forwards AND       |");
+                Console.WriteLine("|backwards, which means he   |");
+                Console.WriteLine("|can back off.               |");
 
-            if (!ContinueText()) return;
+                if (!ContinueText()) break;
 
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("|     Winning Conditions     |");
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("|In order for the sheep to   |");
-            Console.WriteLine("|win the game, they need to  |");
-            Console.WriteLine("|trap the wolf so that he    |");
-            Console.WriteLine("|cannot move anymore, like   |");
-            Console.WriteLine("|this:                       |");
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("|     Winning Conditions     |");
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("|In order for the sheep to   |");
+                Console.WriteLine("|win the game, they need to  |");
+                Console.WriteLine("|trap the wolf so that he    |");
+                Console.WriteLine("|cannot move anymore, like   |");
+                Console.WriteLine("|this:                       |");
 
-            // Show an example Game Board of an trapped wolf also with the class
+                // Show an example Game Board of an trapped wolf also with the 
+                // class
 
-            Console.WriteLine("|...And in order for the wolf|");
-            Console.WriteLine("|to win, all he needs is to  |");
-            Console.WriteLine("|reach one of the starting   |");
-            Console.WriteLine("|positions of the sheep, like|");
-            Console.WriteLine("|this:                       |");
+                Console.WriteLine("|...And in order for the wolf|");
+                Console.WriteLine("|to win, all he needs is to  |");
+                Console.WriteLine("|reach one of the starting   |");
+                Console.WriteLine("|positions of the sheep, like|");
+                Console.WriteLine("|this:                       |");
 
-            // Show an example Game Board of the wolf winning.
+                // Show an example Game Board of the wolf winning.
 
-            if (!ContinueText()) return;
+                if (!ContinueText()) break;
 
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("|           Control          |");
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("|Now that the rules are all  |");
-            Console.WriteLine("|explained, the game's       |");
-            Console.WriteLine("|controls, for both the      |");
-            Console.WriteLine("|wolf and the sheep, will be |");
-            Console.WriteLine("|explained.                  |");
-            Console.WriteLine("|                            |");
-            Console.WriteLine("|As shown on the boards above|");
-            Console.WriteLine("|each line will have a number|");
-            Console.WriteLine("|and each column a letter    |");
-            Console.WriteLine("|assigned to them. By using  |");
-            Console.WriteLine("|the move <column><line>     |");
-            Console.WriteLine("|command, you will be able to|");
-            Console.WriteLine("|move a specific character to|");
-            Console.WriteLine("|a desired tile, like this:  |\n");
-            Console.WriteLine(
-                "move B3\n");
-            Console.WriteLine("|If the character can move to|");
-            Console.WriteLine("|That place, the game will   |");
-            Console.WriteLine("|perform the action and end  |");
-            Console.WriteLine("|your turn. If the game does |");
-            Console.WriteLine("|not recognize the tile      |");
-            Console.WriteLine("|inputted, it will show      |");
-            Console.WriteLine("|the following error message:|\n");
-            Console.WriteLine("Unknown tile, please input again!\n");
-            Console.WriteLine("|...And if you cannot move   |");
-            Console.WriteLine("|to your selected tile:      |\n");
-            Console.WriteLine(
-                "You cannot move to this tile, please input again!\n");
-            Console.WriteLine("|If you're playing as the    |");
-            Console.WriteLine("|sheep, you need to do the   |");
-            Console.WriteLine("|select <column><line>       |");
-            Console.WriteLine("|command in order to choose  |");
-            Console.WriteLine("|the sheep that will move:   |\n");
-            Console.WriteLine(
-                "select C2\n");
-            Console.WriteLine("|The tile selected must have |");
-            Console.WriteLine("|a sheep on it!              |");
-            Console.WriteLine("|As for the wolf, since he is|");
-            Console.WriteLine("|by himself, he only needs to|");
-            Console.WriteLine("|perform the 'move' command. |");
-            Console.WriteLine("|One more thing before we    |");
-            Console.WriteLine("|wrap up: don't forget that  |");
-            Console.WriteLine("|in-game you can input the   |");
-            Console.WriteLine("|'q' key and enter as a      |");
-            Console.WriteLine("|command any time to quit the|");
-            Console.WriteLine("|game.                       |");
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("|    You have returned to    |");
-            Console.WriteLine("|       the main menu.       |");
-            Console.WriteLine("------------------------------");
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("|           Control          |");
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("|Now that the rules are all  |");
+                Console.WriteLine("|explained, the game's       |");
+                Console.WriteLine("|controls, for both the      |");
+                Console.WriteLine("|wolf and the sheep, will be |");
+                Console.WriteLine("|explained.                  |");
+                Console.WriteLine("|                            |");
+                Console.WriteLine("|As shown on the boards above|");
+                Console.WriteLine("|each line will have a number|");
+                Console.WriteLine("|and each column a letter    |");
+                Console.WriteLine("|assigned to them. By using  |");
+                Console.WriteLine("|the move <column><line>     |");
+                Console.WriteLine("|command, you will be able to|");
+                Console.WriteLine("|move a specific character to|");
+                Console.WriteLine("|a desired tile, like this:  |\n");
+                Console.WriteLine(
+                    "move B3\n");
+                Console.WriteLine("|If the character can move to|");
+                Console.WriteLine("|That place, the game will   |");
+                Console.WriteLine("|perform the action and end  |");
+                Console.WriteLine("|your turn. If the game does |");
+                Console.WriteLine("|not recognize the tile      |");
+                Console.WriteLine("|inputted, it will show      |");
+                Console.WriteLine("|the following error message:|\n");
+                Console.WriteLine("Unknown tile, please input again!\n");
+                Console.WriteLine("|...And if you cannot move   |");
+                Console.WriteLine("|to your selected tile:      |\n");
+                Console.WriteLine(
+                    "You cannot move to this tile, please input again!\n");
+                Console.WriteLine("|If you're playing as the    |");
+                Console.WriteLine("|sheep, you need to do the   |");
+                Console.WriteLine("|select <column><line>       |");
+                Console.WriteLine("|command in order to choose  |");
+                Console.WriteLine("|the sheep that will move:   |\n");
+                Console.WriteLine(
+                    "select C2\n");
+                Console.WriteLine("|The tile selected must have |");
+                Console.WriteLine("|a sheep on it!              |");
+                Console.WriteLine("|As for the wolf, since he is|");
+                Console.WriteLine("|by himself, he only needs to|");
+                Console.WriteLine("|perform the 'move' command. |");
+                Console.WriteLine("|One more thing before we    |");
+                Console.WriteLine("|wrap up: don't forget that  |");
+                Console.WriteLine("|in-game you can input the   |");
+                Console.WriteLine("|'q' key and enter as a      |");
+                Console.WriteLine("|command any time to quit the|");
+                Console.WriteLine("|game.                       |");
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("|    You have returned to    |");
+                Console.WriteLine("|       the main menu.       |");
+                Console.WriteLine("------------------------------");
 
-        }
+            }
+        }         
 
         /// <summary>
         /// Simple function that prints repeating text in the GameTutorial() 
