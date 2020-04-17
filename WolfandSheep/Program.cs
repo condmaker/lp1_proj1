@@ -31,7 +31,6 @@ namespace WolfandSheep
             Tile wantedTile = null;
             int wantedTileNumb = ConvertToArrayNumb(x,y);
             wantedTile = this.darkTiles[wantedTileNumb];
-            Console.WriteLine(this.darkTiles[wantedTileNumb].tileState);
             return wantedTile;
         }
 
@@ -66,7 +65,7 @@ namespace WolfandSheep
 
                     //Create new tile and add it to the list of dark tiles
                     this.darkTiles[tilenumb] = 
-                    new Tile(x, y, state, inicialPos);
+                    new Tile(x, y, state, tilenumb, inicialPos);
 
                     //increment tile numb
                     tilenumb++;
@@ -82,8 +81,11 @@ namespace WolfandSheep
         /// </summary>
         public void AssignNeighbours()
         {           
-            foreach(Tile t in darkTiles)
-            {                   
+
+            
+            foreach(Tile t in this.darkTiles)
+            {           
+             
                 if(t.y % 2 == 1)
                 {
                     //Get left/next tile
@@ -119,7 +121,7 @@ namespace WolfandSheep
         /// <summary>
         /// Decides the neighbour that is in the chosen position
         /// </summary>
-        public void GetNeighbour(int[] typeOfNeihgbour, Tile currentTile)
+        public void GetNeighbour(int[] typeOfNeighbour, Tile currentTile)
         {
             int tempNumb;
             
@@ -130,9 +132,9 @@ namespace WolfandSheep
             //Decides how to interact with the coordinates to 
             //get the selected neighbour
             
-            if(typeOfNeihgbour[0] == 0)
+            if(typeOfNeighbour[0] == 0)
             {
-                switch(typeOfNeihgbour[1])
+                switch(typeOfNeighbour[1])
                 {
                     case 0:
                         yInteraction = 1;
@@ -151,8 +153,9 @@ namespace WolfandSheep
                 }
             }
             else
-            {               
-                switch(typeOfNeihgbour[1])
+            {      
+        
+                switch(typeOfNeighbour[1])
                 {
                     case 0:
                         xInteraction = -1;
@@ -173,16 +176,19 @@ namespace WolfandSheep
             }
 
 
+
             int tempX = currentTile.x + xInteraction;
             int tempY = currentTile.y + yInteraction;
+            
             
 
             if(tempY >= 0 && tempY < sideNumb/2 
             && tempX >= 0 && tempX < sideNumb/2)
             {
                 
-                tempNumb = ConvertToArrayNumb(tempX, tempY);
-                currentTile.neighbours[typeOfNeihgbour[1]] = darkTiles[tempNumb];                     
+                tempNumb = ConvertToArrayNumb(tempX, tempY);           
+                currentTile.neighbours[typeOfNeighbour[1]] = 
+                this.darkTiles[tempNumb];                     
             }
         }
 
@@ -194,7 +200,7 @@ namespace WolfandSheep
         /// </summary>
         public int ConvertToArrayNumb(int x, int y)
         {
-            int arrayNumb = y + (x * sideNumb/2);
+            int arrayNumb = x + (y * sideNumb/2);
             return arrayNumb;
         } 
 
@@ -242,18 +248,32 @@ namespace WolfandSheep
         //0 - empty / 1 - sheep / 2 - wolf 
         public int tileState;
         public int x, y;
+        public int index;
         public Tile[] neighbours = new Tile[]{null,null,null,null};
         
-        public Tile(int x, int y, int state, bool isInitialPos = false)
+        public Tile(int x, int y, int state, int index,
+         bool isInitialPos = false)
         {    
+            this.index = index;
             this.x = x;
             this.y = y;
             this.tileState = state;
             this.isInitialPos = isInitialPos;
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
         public void PrintTileImage()
         {
+            
+            /*Console.Write("  " + index + "  ");
+            return;*/
+
+            /*Console.Write(x + " , " + y);
+            return;*/
+
+            
             switch(this.tileState)
             {
                 case 0:
@@ -269,9 +289,14 @@ namespace WolfandSheep
                     Console.Write("If u are seeing this I did a bad job");
                     break;
             }
-        
+            
         }
     	
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetTile"></param>
+        /// <returns></returns>
         public bool CheckTileAvailability(Tile targetTile)
         {
             bool available = false;
@@ -280,13 +305,40 @@ namespace WolfandSheep
             
             foreach(Tile n in this.neighbours)
             {
-                if(n == targetTile)
+
+                if(n == null){ continue; }
+
+                if(n.index == targetTile.index)
                 {
                     available = true;
                 }
             }
 
             return available;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckIfSurrounded()
+        {
+            bool isSurrounded = true;
+
+            //Check if any neighbour is empty
+            foreach(Tile n in this.neighbours)
+            {
+                //Ignore if null
+                if(n == null){ continue; }
+                    
+                Console.WriteLine(n.tileState);
+                if(n.tileState == 0)
+                {
+
+                    isSurrounded = false;
+                }
+            }
+            return isSurrounded;
         }
 
     }               
@@ -298,10 +350,9 @@ namespace WolfandSheep
         {
             // Prints the main menu and starts the 'input' string
             MainScreen();
+            Board gameBoard = new Board(8);
             string mainInput = "";
 
-            Board ola = new Board(8);
-            ola.ShowBoard();
 
 
             // Starts a loop that will continuously observe the player's inputs
