@@ -332,26 +332,28 @@ namespace WolfandSheep
         }
     	
         /// <summary>
-        /// 
+        /// Compares one tile to another, and observes if the player can move 
+        /// to this another tile.
         /// </summary>
-        /// <param name="targetTile"></param>
-        /// <returns></returns>
+        /// <param name="targetTile">The new Tile class object</param>
+        /// <returns>Bool that says if it cans or not</returns>
         public bool CheckTileAvailability(Tile targetTile)
         {
             bool available = false;
-
-            if(targetTile.tileState == 0){available = true;}
             
             foreach(Tile n in this.neighbours)
             {
 
                 if(n == null){ continue; }
 
-                if(n.index == targetTile.index)
+                if((n.index == targetTile.index) && (targetTile.tileState == 0))
                 {
                     available = true;
                 }
             }
+
+            // Verifies if inputted tile is the same as before
+            if (targetTile == this) available = true;
 
             return available;
         }
@@ -455,6 +457,9 @@ namespace WolfandSheep
             // Variable that will represent the number of turns when the game
             // begins
             int turnCount = 1;
+            // Stores the final game state-- if the wolf or sheep won.
+            // Sheep wins is 0, Wolf loses is 1
+            byte gameState = 0;
             // Variable that will store the player's commands with an array of
             // strings
             string[] gameCommand;
@@ -463,7 +468,7 @@ namespace WolfandSheep
             int[] tileNumArray;
             // Declaration of the variable that will store the index of
             // the coordinates
-            int tileNum;
+            int tileNum = 0;
 
             // Shows the board to the player
             gameBoard.ShowBoard();
@@ -534,17 +539,25 @@ namespace WolfandSheep
                     continue;
                 }
 
-                // Reconstructs the Game Board and shows it to the player
-                gameBoard.ShowBoard(); 
+                break;
             }
 
             // Starts the game on a loop that breaks if the input is equal to
             // 'q'.
             while (playersInput != "q")
             {
+                // Stores the number of the anterior tile to see if the player
+                // can move in wanted direction
+                int oldNum = 0; 
+
+                // Shows the current turn to the player
+                Console.WriteLine($"TURN {turnCount}");
+                // Reconstructs the Game Board and shows it to the player
+                gameBoard.ShowBoard();   
+
                 if (turnCount % 2 != 0)
                 {
-                    Console.WriteLine("PLAYER1, make your move.");
+                    Console.WriteLine("PLAYER1 (Wolf), make your move.");
                     Console.WriteLine("|MOVE COMMAND: <move> <tile>|");
 
                     playersInput = Console.ReadLine();
@@ -556,16 +569,35 @@ namespace WolfandSheep
                         continue;
                     } 
 
+                    // Converts the desired tile to an array of ints with the
+                    // correct coordinates
                     tileNumArray = CoordToInt(
                         gameCommand[1][0], gameCommand[1][1]);
 
+                    // Stores the old tile index at another variable
+                    oldNum = tileNum;
+                    
+                    // Obtains the index from the inputted coordinates
                     tileNum = gameBoard.ConvertToArrayNumb(
                         tileNumArray[0], tileNumArray[1]);
+
+                    if (!gameBoard.darkTiles[oldNum].CheckTileAvailability(
+                        gameBoard.darkTiles[tileNum]))
+                    {
+                         Console.WriteLine("You cannot go to this tile. " +
+                                           "please input again.");
+                         continue;
+                    }
+                    if (gameBoard.darkTiles[oldNum].CheckIfSurrounded())
+                    {
+                        gameState = 0;
+                        break;
+                    }
 
                 }
                 else
                 {
-                    Console.WriteLine("PLAYER2, make your move.");
+                    Console.WriteLine("PLAYER2 (Sheep), make your move.");
                     Console.WriteLine(
                         "|MOVE COMMAND: <move> <tile>|    "+
                         "|CHOOSE SHEEP COMMAND: <choose> <tile>|");
@@ -576,6 +608,19 @@ namespace WolfandSheep
                 
                 // Increases the turn count and goes back to the beginning
                 turnCount++;
+            }
+
+            switch(gameState)
+            {
+                case 0:
+                    Console.WriteLine("PLAYER2, the sheep, wins!");
+                    break;
+                case 1: 
+                    Console.WriteLine("PLAYER1, the Wolf, wins!");
+                    break;
+                default:
+                    Console.WriteLine("Error.");
+                    break;
             }
 
             return;
