@@ -406,6 +406,7 @@ namespace WolfandSheep
 
                     case "s":
                         GameStart();
+                        mainInput = "q";
                         break;
 
                     case "m":
@@ -451,28 +452,34 @@ namespace WolfandSheep
             Board gameBoard = new Board();
             string playersInput = null; 
 
+            // Variable that will represent the number of turns when the game
+            // begins
+            int turnCount = 1;
+            // Variable that will store the player's commands with an array of
+            // strings
+            string[] gameCommand;
+            // Declaration of the array of coordinates that will be made by
+            // the player's input
+            int[] tileNumArray;
+            // Declaration of the variable that will store the index of
+            // the coordinates
+            int tileNum;
+
             // Shows the board to the player
             gameBoard.ShowBoard();
             
-            // Asks one of the players to select the wolf's position.
+            // Asks one of the players to select the wolf's position
             Console.WriteLine(
                 "PLAYER1, please select the position for the WOLF, "  +
                 "the character you will play as. You can only choose" +
                 "tiles from the A row. Input the command as:\n\n"     +
                 "choose <vertical>\n\n"+
                 "If you choose an invalid number on that row, the"    +
-                "will convert it to the highest possible number on"   +
+                "will convert it to the highest possible number on "  +
                 "that row.\n");
 
             while (true)
             {
-                // Declaration of the array of coordinates that will be made by
-                // the player's input
-                int[] tileNumArray;
-                // Declaration of the variable that will store the index of
-                // the coordinates
-                int tileNum;
-
                 // Will store the player's input on the aforementioned variable,
                 // and then will split it in order to read each command easily
                 playersInput = Console.ReadLine();
@@ -497,11 +504,22 @@ namespace WolfandSheep
                     continue;
                 }
 
-
+                // Transforms the player input to an array of ints
                 tileNumArray = CoordToInt('A', firstCommand[1][0]);
 
-                tileNum = 
-                gameBoard.ConvertToArrayNumb(tileNumArray[0], tileNumArray[1]);
+                // Observes if the vertical tile number inputted by the player
+                // is valid on the situation
+                if (tileNumArray[1] > 8)
+                {
+                    Console.WriteLine(
+                        "Invalid Coordinate. Please input a valid tile.");
+                    continue;
+                }
+
+                // Converts the int array to an index, so it can be given to
+                // the game board
+                tileNum = gameBoard.ConvertToArrayNumb(
+                    tileNumArray[0], tileNumArray[1]);
 
                 // Observes if tile is out of range
                 try
@@ -516,13 +534,64 @@ namespace WolfandSheep
                     continue;
                 }
 
-                gameBoard.ShowBoard();           
+                // Reconstructs the Game Board and shows it to the player
+                gameBoard.ShowBoard(); 
             }
+
+            // Starts the game on a loop that breaks if the input is equal to
+            // 'q'.
+            while (playersInput != "q")
+            {
+                if (turnCount % 2 != 0)
+                {
+                    Console.WriteLine("PLAYER1, make your move.");
+                    Console.WriteLine("|MOVE COMMAND: <move> <tile>|");
+
+                    playersInput = Console.ReadLine();
+                    gameCommand = playersInput.Split(" ");
+
+                    if (gameCommand[0] != "move")
+                    {
+                        Console.WriteLine("Unknown Input. Please input again.");
+                        continue;
+                    } 
+
+                    tileNumArray = CoordToInt(
+                        gameCommand[1][0], gameCommand[1][1]);
+
+                    tileNum = gameBoard.ConvertToArrayNumb(
+                        tileNumArray[0], tileNumArray[1]);
+
+                }
+                else
+                {
+                    Console.WriteLine("PLAYER2, make your move.");
+                    Console.WriteLine(
+                        "|MOVE COMMAND: <move> <tile>|    "+
+                        "|CHOOSE SHEEP COMMAND: <choose> <tile>|");
+
+                    playersInput = Console.ReadLine();
+                    gameCommand = playersInput.Split(" ");
+                }
+                
+                // Increases the turn count and goes back to the beginning
+                turnCount++;
+            }
+
+            return;
             
         }
 
+        /// <summary>
+        /// Converts two chars into an array of ints. The first char needs to be
+        /// a number from A-to-G, and the second one a number.
+        /// </summary>
+        /// <param name="a">A-to-G char</param>
+        /// <param name="b">A number in the form of a char</param>
+        /// <returns>Array of ints</returns>
         private static int[] CoordToInt(char a, char b)
         {
+            // Declaration of the used variables
             int xValue;
             int yValue;
 
@@ -530,8 +599,6 @@ namespace WolfandSheep
             // coordinates
             xValue = (int)(MathF.Ceiling((float)(char.GetNumericValue(b)/ 2) - 1));
             yValue = (int)(char.ToUpper(a) - 65);
-
-            Console.WriteLine("yv: " + yValue + " yx: " + xValue);
 
             // Returns the int array with the coordinates
             return new int[] {xValue, yValue};
@@ -544,6 +611,7 @@ namespace WolfandSheep
         /// </summary>
         private static void GameTutorial()
         {
+            Board tutorialBoard = new Board();
             while (true)
             {
                 Console.WriteLine("------------------------------");
@@ -554,7 +622,29 @@ namespace WolfandSheep
                 Console.WriteLine("|This is a multiplayer puzzle|");
                 Console.WriteLine("|game, where one player con- |");
                 Console.WriteLine("|trols 4 sheep, and the other|");
-                Console.WriteLine("|controls a wolf.            |");
+                Console.WriteLine("|controls a wolf. Here is an |");
+                Console.WriteLine("|board example:              |\n");
+
+                tutorialBoard.ShowBoard();
+
+                Console.WriteLine("|Sheep are represented with  |");
+                Console.WriteLine("|MEEH on the board, while the|");
+                Console.WriteLine("|wolf is represented with    |");
+                Console.WriteLine("|WOOF.                       |");
+                Console.WriteLine("|You can only move your      |");
+                Console.WriteLine("|pieces to the tiles with    |");
+                Console.WriteLine("|indents, like this: |----|  |");
+                Console.WriteLine("|                            |");
+                Console.WriteLine("|Horizontal lines are        |");
+                Console.WriteLine("|represented with numbers    |");
+                Console.WriteLine("|(1-8) and vertical lines    |");
+                Console.WriteLine("|with letters (A-G). In order|");
+                Console.WriteLine("|to reference a tile in a    |");
+                Console.WriteLine("|command, you put first the  |");
+                Console.WriteLine("|letter, then the number,    |");
+                Console.WriteLine("|for example:                |\n");
+                Console.WriteLine("D4\n");
+
 
                 if (!ContinueText()) break;
 
@@ -571,13 +661,12 @@ namespace WolfandSheep
                 Console.WriteLine("|board, much like chess and  |");
                 Console.WriteLine("|checkers. The wolf is on the|");
                 Console.WriteLine("|'top' of the board, and the |");
-                Console.WriteLine("|4 sheep are on the bottom:  |");
-
-                // Show the initial Game Board here with the class
-
-                Console.WriteLine("|Much like those games too,  |");
-                Console.WriteLine("|there are turns between the |");
-                Console.WriteLine("|wolf and sheep player.      |");
+                Console.WriteLine("|4 sheep are on the bottom.  |");
+                Console.WriteLine("|                            |");
+                Console.WriteLine("|Much like those other board |");
+                Console.WriteLine("|games, there are turns      |");
+                Console.WriteLine("|between the wolf and sheep  |");
+                Console.WriteLine("|player.                     |");
                 Console.WriteLine("|The wolf will always play   |");
                 Console.WriteLine("|first at the start of the   |");
                 Console.WriteLine("|game, and furthermore, on   |");
@@ -684,6 +773,7 @@ namespace WolfandSheep
                 Console.WriteLine("|    You have returned to    |");
                 Console.WriteLine("|       the main menu.       |");
                 Console.WriteLine("------------------------------");
+                break;
 
             }
         }         
@@ -699,7 +789,7 @@ namespace WolfandSheep
             
             Console.WriteLine("-----------------------------");
             Console.WriteLine("|   Enter 'c' to continue,   |");
-            Console.WriteLine("|  or anything else to quit. |");
+            Console.WriteLine("|or anything else to go back.|");
             Console.WriteLine("-----------------------------");
 
             // Read the user's command and store it on the string
