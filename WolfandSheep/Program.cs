@@ -16,7 +16,7 @@ namespace WolfandSheep
         // considered as a single array, the player tackles it as a multi-
         // dimensional one
         public Tile[] darkTiles = new Tile[]{null,null,null,null,null,null,null
-        ,null,null,null,null,null,null,null,null,null};
+        ,null,null,null,null,null,null,null,null,null,};
 
         // The basic class constructor. Will construct the board
         public Board()
@@ -459,7 +459,7 @@ namespace WolfandSheep
             int turnCount = 1;
             // Stores the final game state-- if the wolf or sheep won.
             // Sheep wins is 0, Wolf loses is 1
-            byte gameState = 0;
+            ushort gameState = 0;
             // Variable that will store the player's commands with an array of
             // strings
             string[] gameCommand;
@@ -549,9 +549,20 @@ namespace WolfandSheep
                 // Stores the number of the anterior tile to see if the player
                 // can move in wanted direction
                 int oldNum = 0; 
+                int wolfNum = 0;
+
+                // A for cicle to discover where is the wolf
+                for (int i = 0; i <= 15; i++)
+                {
+                    if (gameBoard.darkTiles[i].tileState == 2)
+                    {
+                        wolfNum = i;
+                        break;
+                    } 
+                }
 
                 // Shows the current turn to the player
-                Console.WriteLine($"TURN {turnCount}");
+                Console.WriteLine($"\nTURN {turnCount}");
                 // Reconstructs the Game Board and shows it to the player
                 gameBoard.ShowBoard();   
 
@@ -560,55 +571,127 @@ namespace WolfandSheep
                     Console.WriteLine("PLAYER1 (Wolf), make your move.");
                     Console.WriteLine("|MOVE COMMAND: <move> <tile>|");
 
+                    // Saves the wolf location on oldNum
+                    oldNum = wolfNum;
+                }
+                else
+                {
+                    Console.WriteLine("PLAYER2 (Sheep), choose your sheep.");
+                    Console.WriteLine(
+                        "|CHOOSE SHEEP COMMAND: <choose> <tile>|");
+
                     playersInput = Console.ReadLine();
                     gameCommand = playersInput.Split(" ");
 
-                    if (gameCommand[0] != "move")
+                    if (gameCommand[0] != "choose")
                     {
-                        Console.WriteLine("Unknown Input. Please input again.");
+                        Console.WriteLine(
+                            "Please choose a tile with your desired sheep to " +
+                            "move.");
                         continue;
-                    } 
+                    }
 
                     // Converts the desired tile to an array of ints with the
                     // correct coordinates
                     tileNumArray = CoordToInt(
                         gameCommand[1][0], gameCommand[1][1]);
 
-                    // Stores the old tile index at another variable
-                    oldNum = tileNum;
-                    
                     // Obtains the index from the inputted coordinates
                     tileNum = gameBoard.ConvertToArrayNumb(
                         tileNumArray[0], tileNumArray[1]);
 
-                    if (!gameBoard.darkTiles[oldNum].CheckTileAvailability(
-                        gameBoard.darkTiles[tileNum]))
+                    // Checks if inputted tile has a sheep on it (MAY NEED DBG)
+                    if (gameBoard.darkTiles[tileNum].tileState != 1)
                     {
-                         Console.WriteLine("You cannot go to this tile. " +
-                                           "please input again.");
-                         continue;
-                    }
-                    if (gameBoard.darkTiles[oldNum].CheckIfSurrounded())
-                    {
-                        gameState = 0;
-                        break;
+                        Console.WriteLine(
+                            "There is no sheep on this tile. Please input " +
+                            "again.");
+                        continue;
                     }
 
+                    // Saves the chosen sheep location on oldNum
+                    oldNum = tileNum;
+
+                    Console.WriteLine("Sheep Chosen!\n");
+                    Console.WriteLine("PLAYER2 (Sheep), make your move.");
+                    Console.WriteLine("|MOVE COMMAND: <move> <tile>|");
+
+                }
+
+                playersInput = Console.ReadLine();
+                gameCommand = playersInput.Split(" ");
+
+                if (gameCommand[0] != "move")
+                {
+                    Console.WriteLine("Unknown Input. Please input again.");
+                    continue;
+                } 
+
+                // Converts the desired tile to an array of ints with the
+                // correct coordinates
+                try
+                {
+                    tileNumArray = CoordToInt(
+                    gameCommand[1][0], gameCommand[1][1]);
+                }
+                catch (System.IndexOutOfRangeException)
+                {
+                    Console.WriteLine("Tile out of range. Input again.");
+                    continue;
+                }
+                
+                tileNumArray = CoordToInt(
+                    gameCommand[1][0], gameCommand[1][1]);
+                
+                // Obtains the index from the inputted coordinates
+                tileNum = gameBoard.ConvertToArrayNumb(
+                    tileNumArray[0], tileNumArray[1]);
+
+                Console.WriteLine("tilenum: " + tileNum);
+                Console.WriteLine("wolfnum: " + wolfNum);
+            
+                // With the present player tile, checks if he can go to next
+                // tile
+                if (!gameBoard.darkTiles[oldNum].CheckTileAvailability(
+                    gameBoard.darkTiles[tileNum]))
+                {
+                     Console.WriteLine("You cannot go to this tile. " +
+                                       "please input again.");
+                     continue;
+                }
+
+                // Assigns tile state depending if the wolf or sheep made the
+                // play, and resets old tile state
+                if (turnCount % 2 != 0)
+                {
+                    gameBoard.darkTiles[oldNum].tileState = 0;
+                    gameBoard.darkTiles[tileNum].tileState = 2;                    
                 }
                 else
                 {
-                    Console.WriteLine("PLAYER2 (Sheep), make your move.");
-                    Console.WriteLine(
-                        "|MOVE COMMAND: <move> <tile>|    "+
-                        "|CHOOSE SHEEP COMMAND: <choose> <tile>|");
-
-                    playersInput = Console.ReadLine();
-                    gameCommand = playersInput.Split(" ");
+                    gameBoard.darkTiles[oldNum].tileState = 0;
+                    gameBoard.darkTiles[tileNum].tileState = 1;
                 }
-                
+
+                // Checks if the wolf is surrounded
+                if (gameBoard.darkTiles[wolfNum].CheckIfSurrounded())
+                {
+                    gameState = 0;
+                    Console.WriteLine("Test");
+                    break;
+                }
+                if( (tileNum == 12 || tileNum == 13 || tileNum == 14 ||
+                   tileNum == 15) && (turnCount % 2 != 0) )
+                {
+                    gameState = 1;
+                    break;
+                }
+            
                 // Increases the turn count and goes back to the beginning
                 turnCount++;
             }
+
+            gameBoard.ShowBoard();  
 
             switch(gameState)
             {
@@ -617,6 +700,8 @@ namespace WolfandSheep
                     break;
                 case 1: 
                     Console.WriteLine("PLAYER1, the Wolf, wins!");
+                    break;
+                case 3:
                     break;
                 default:
                     Console.WriteLine("Error.");
