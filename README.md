@@ -148,4 +148,4 @@ Símples método que imprime um texto e verifica o *input* de um jogador, retorn
 ![fluxograma]
 
 [githublink]: https://github.com/condmaker/lp1_proj1
-[fluxograma]: Diagrams/fluxograma.pdf
+[fluxograma]: Diagrams/Fluxograma.png
