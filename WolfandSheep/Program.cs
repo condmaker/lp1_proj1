@@ -19,7 +19,7 @@ namespace WolfandSheep
         ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
         ,null,null,null,null,null,null,null,null,null,null,null};
 
-        // The basic class constructor. Will construct the board
+        // The basic class constructor. Will construct the board after called
         public Board()
         {     
             this.CreateBoard(this.sideNumb);
@@ -57,34 +57,38 @@ namespace WolfandSheep
             // Variable that will increment the tile list
             int tilenumb = 0;
 
-            //
+            // A double for cicle, that will account vertical and horizontal
+            // tiles in the construction
             for(int i = 0; i < (sideNumb); i++)
             {
                 bool inicialPos = false;
-                //Empty, Wolf or Sheep maybe change to enum
+                // The tile state. 0 = Empty Tile, 1 = Sheep Tile, 2 = Wolf Tile
                 int state = 0;
 
                 for(int j = 0; j < (sideNumb/2); j++)
                 {        
-                    //Sheep spawn in the first line 
+                    // Spawning the sheep always at the first line from the 
+                    // bottom
                     if(i == (sideNumb - 1))
                     {
                         inicialPos = true;
                         state = 1;
                     }
 
-                    int x = j;//sideNumb/2 - (j+1);
+                    int x = j;
                     int y = i; 
 
-                    //Create new tile and add it to the list of dark tiles
+                    // Create new tile and add it to the list of dark tiles
                     this.darkTiles[tilenumb] = 
                     new Tile(x, y, state, tilenumb, inicialPos);
 
-                    //increment tile numb
+                    // Increment tile numb
                     tilenumb++;
                 }
             }
 
+            // Assigns the neighbours for each tile at the board, for the rest
+            // of the game
             this.AssignNeighbours();
         }
 
@@ -227,7 +231,7 @@ namespace WolfandSheep
                                                                       
         /// <summary>
         /// Constructs the visual game board in accordance with wolf, sheep, and
-        /// gameBoard variables (SUBJECT TO CHANGE)
+        /// gameBoard variables
         /// </summary>
         public void ShowBoard()
         {
@@ -236,7 +240,6 @@ namespace WolfandSheep
             Console.Write("A |");
             foreach(Tile t in darkTiles)
             {
-                //First tile in a line therefor start a new line 
                 if(t.x == 0 && t.y != 0)
                 {
                     Console.WriteLine("");
@@ -289,16 +292,26 @@ namespace WolfandSheep
 
     }
 
+    /// <summary>
+    /// Class that manages individual tiles, their state, coordinates (in an 
+    /// index value), and their own neighbours.
+    /// </summary>
     class Tile
     {
+        // A tile that verifies if its the initial position of a sheep. It is
+        // there in order for the wolf to win
         public bool isInitialPos;
-
-        //0 - empty / 1 - sheep / 2 - wolf 
+        // The state of the tile, if it is empty, or has a sheep/wolf.
+        // 0 - Empty | 1 - Sheep | 2 - Wolf
         public int tileState;
+        // The tile's coordinates on a numerical system
         public int x, y;
+        // The index coordinate of the tile, to access the array
         public int index;
+        // The tile's neighbours
         public Tile[] neighbours = new Tile[]{null,null,null,null};
         
+        // The basic constructor of the tile
         public Tile(int x, int y, int state, int index,
          bool isInitialPos = false)
         {    
@@ -310,18 +323,11 @@ namespace WolfandSheep
         }
         
         /// <summary>
-        /// 
+        /// Prints an 'image' of the tile based on its state.
         /// </summary>
         public void PrintTileImage()
         {
-            
-            /*Console.Write("  " + index + "  ");
-            return;*/
-
-            /*Console.Write(x + " , " + y);
-            return;*/
-
-            
+            // Verifies the tile state and prints the 'image' accordingly
             switch(this.tileState)
             {
                 case 0:
@@ -334,7 +340,7 @@ namespace WolfandSheep
                     Console.Write("WOOF|");
                     break;
                 default:
-                    Console.Write("If u are seeing this I did a bad job");
+                    Console.Write("Error.");
                     break;
             }
             
@@ -454,7 +460,7 @@ namespace WolfandSheep
         }
 
         /// <summary>
-        /// 
+        /// Method that starts the game.
         /// </summary>
         private static void GameStart()
         {
@@ -574,7 +580,6 @@ namespace WolfandSheep
                 if (gameBoard.darkTiles[wolfNum].CheckIfSurrounded())
                 {
                     gameState = 0;
-                    Console.WriteLine("Test");
                     break;
                 }
 
@@ -644,6 +649,8 @@ namespace WolfandSheep
 
                 playersInput = Console.ReadLine();
 
+                // If the player input is 'q', it leaves the loop, and then the
+                // program
                 if (playersInput == "q") 
                 {
                     gameState = 3;
@@ -652,6 +659,8 @@ namespace WolfandSheep
 
                 gameCommand = playersInput.Split(" ");
 
+                // Checks if the command is different from move, and if so, 
+                // returns to the beginning
                 if (gameCommand[0] != "move")
                 {
                     Console.WriteLine("Unknown Input. Please input again.");
@@ -670,7 +679,17 @@ namespace WolfandSheep
                     Console.WriteLine("Tile out of range. Input again.");
                     continue;
                 }
+
+                // Makes sure that sheep can't go backwards
+                if ( (gameBoard.darkTiles[oldNum].y 
+                < gameBoard.darkTiles[tileNum].y) && turnCount % 2 == 0)
+                {
+                    Console.WriteLine(
+                        "You cannot go back as sheep. Please input again.");
+                    continue;
+                }
                 
+                // Converts the gameCommand coords to an array of ints
                 tileNumArray = CoordToInt(
                     gameCommand[1][0], gameCommand[1][1]);
                 
@@ -711,6 +730,8 @@ namespace WolfandSheep
                 turnCount++;
             }
 
+            // Observes the game state and prints the correct text-- if the 
+            // sheep or wolf won, or if the player has quit the game.
             switch(gameState)
             {
                 case 0:
@@ -747,7 +768,8 @@ namespace WolfandSheep
 
             // Converts each char to their respective numbers in board 
             // coordinates
-            xValue = (int)(MathF.Ceiling((float)(char.GetNumericValue(b)/ 2) - 1));
+            xValue = (int)(
+                MathF.Ceiling((float)(char.GetNumericValue(b)/ 2) - 1));
             yValue = (int)(char.ToUpper(a) - 65);
 
             // Returns the int array with the coordinates
@@ -756,8 +778,8 @@ namespace WolfandSheep
         }
 
         /// <summary>
-        /// Shows to the player how to play the game with a concise and interac-
-        /// tive tutorial.
+        /// Shows to the player how to play the game with a concise and 
+        /// interactive tutorial.
         /// </summary>
         private static void GameTutorial()
         {
@@ -926,6 +948,8 @@ namespace WolfandSheep
                 break;
 
             }
+
+            return;
         }         
 
         /// <summary>
