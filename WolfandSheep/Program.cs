@@ -402,7 +402,7 @@ namespace WolfandSheep
 
     class Program              
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // Prints the main menu and starts the 'input' string
             MainScreen();     
