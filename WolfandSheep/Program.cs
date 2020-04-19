@@ -468,7 +468,6 @@ namespace WolfandSheep
             // both players
             Board gameBoard = new Board();
             string playersInput = null; 
-
             // Variable that will represent the number of turns when the game
             // begins
             int turnCount = 1;
@@ -494,9 +493,11 @@ namespace WolfandSheep
                 "the character you will play as. You can only choose " +
                 "tiles from the A row. Input the command as:\n\n"     +
                 "choose <horizontal number>\n\n"+
-                "If you choose an invalid number on that row, the"    +
+                "If you choose an invalid number on that row, the game "    +
                 "will convert it to the highest possible number on "  +
-                "that row.\n");
+                "that row. Keep in mind that this is also valid for the " + 
+                "rest of the in-game commands. If you input a unavailable " +
+                "tile, it may round it to the nearest tile.\n");
 
             while (true)
             {
@@ -566,7 +567,8 @@ namespace WolfandSheep
                 int oldNum = 0; 
                 int wolfNum = 0;
 
-                // A for cicle to discover where is the wolf
+                // A for cicle to discover where is the wolf, then storing the
+                // location index on the wolfNum variable
                 for (int i = 0; i <= gameBoard.darkTiles.Length; i++)
                 {
                     if (gameBoard.darkTiles[i].tileState == 2)
@@ -576,7 +578,7 @@ namespace WolfandSheep
                     } 
                 }
 
-                //Checks if wolf has won
+                // Checks if wolf has won
                 if (gameBoard.darkTiles[wolfNum].isInitialPos == true)
                 {
                     gameState = 1;
@@ -595,6 +597,8 @@ namespace WolfandSheep
                 // Reconstructs the Game Board and shows it to the player
                 gameBoard.ShowBoard();   
 
+                // Observes which player makes their move if turnCount is odd
+                // or even
                 if (turnCount % 2 != 0)
                 {
                     Console.WriteLine("PLAYER1 (Wolf), make your move.");
@@ -609,16 +613,23 @@ namespace WolfandSheep
                     Console.WriteLine(
                         "|CHOOSE SHEEP COMMAND: choose <tile>|");
 
+                    // Reads the player input
                     playersInput = Console.ReadLine();
 
+                    // Observes if said input is equal to q, and if so it 
+                    // changes the gameState variable to 3, in order to leave
+                    // the program immediately when leaving the loop
                     if (playersInput == "q") 
                     {
                         gameState = 3;
                         continue;
                     }
 
+                    // Splits the player command in order to analyze it better
                     gameCommand = playersInput.Split(" ");
 
+                    // Observes if player command, is different from choose,
+                    // returning to the beggining if that is the case
                     if (gameCommand[0] != "choose")
                     {
                         Console.WriteLine(
@@ -654,10 +665,9 @@ namespace WolfandSheep
 
                 }
 
+                // Reads the player input for movement of the piece
                 playersInput = Console.ReadLine();
 
-                // If the player input is 'q', it leaves the loop, and then the
-                // program
                 if (playersInput == "q") 
                 {
                     gameState = 3;
@@ -675,7 +685,9 @@ namespace WolfandSheep
                 } 
 
                 // Converts the desired tile to an array of ints with the
-                // correct coordinates
+                // correct coordinates, if it is not able to do that, the 
+                // program detects an error where the tile is out of range, 
+                // and returns to the beginning of the loop
                 try
                 {
                     tileNumArray = CoordToInt(
@@ -879,19 +891,14 @@ namespace WolfandSheep
                 Console.WriteLine("|In order for the sheep to   |");
                 Console.WriteLine("|win the game, they need to  |");
                 Console.WriteLine("|trap the wolf so that he    |");
-                Console.WriteLine("|cannot move anymore, like   |");
-                Console.WriteLine("|this:                       |");
-
-                // Show an example Game Board of an trapped wolf also with the 
-                // class
-
+                Console.WriteLine("|cannot move anymore, in any |");
+                Console.WriteLine("|direction.                  |");
                 Console.WriteLine("|...And in order for the wolf|");
                 Console.WriteLine("|to win, all he needs is to  |");
                 Console.WriteLine("|reach one of the starting   |");
-                Console.WriteLine("|positions of the sheep, like|");
-                Console.WriteLine("|this:                       |");
-
-                // Show an example Game Board of the wolf winning.
+                Console.WriteLine("|positions of the sheep,     |");
+                Console.WriteLine("|which is any tile on the H  |");
+                Console.WriteLine("|row.                        |");
 
                 if (!ContinueText()) break;
 
@@ -908,7 +915,7 @@ namespace WolfandSheep
                 Console.WriteLine("|each line will have a number|");
                 Console.WriteLine("|and each column a letter    |");
                 Console.WriteLine("|assigned to them. By using  |");
-                Console.WriteLine("|the move <column><line>     |");
+                Console.WriteLine("|the move <tile>             |");
                 Console.WriteLine("|command, you will be able to|");
                 Console.WriteLine("|move a specific character to|");
                 Console.WriteLine("|a desired tile, like this:  |\n");
@@ -919,20 +926,20 @@ namespace WolfandSheep
                 Console.WriteLine("|perform the action and end  |");
                 Console.WriteLine("|your turn. If the game does |");
                 Console.WriteLine("|not recognize the tile      |");
-                Console.WriteLine("|inputted, it will show      |");
-                Console.WriteLine("|the following error message:|\n");
-                Console.WriteLine("Unknown tile, please input again!\n");
-                Console.WriteLine("|...And if you cannot move   |");
-                Console.WriteLine("|to your selected tile:      |\n");
+                Console.WriteLine("|inputted, or if you cannot  |");
+                Console.WriteLine("|move to the selected tile,  |");
+                Console.WriteLine("|the game will show you the  |");
+                Console.WriteLine("|following error message:    |\n");
                 Console.WriteLine(
                     "You cannot move to this tile, please input again!\n");
                 Console.WriteLine("|If you're playing as the    |");
-                Console.WriteLine("|sheep, you need to do the   |");
-                Console.WriteLine("|select <column><line>       |");
-                Console.WriteLine("|command in order to choose  |");
+                Console.WriteLine("|sheep, you need to do the   |\n");
+                Console.WriteLine("|choose <tile>               |\n");
+                Console.WriteLine("|command ALWAYS FIRST in     |");
+                Console.WriteLine("|order to choose correctly   |");
                 Console.WriteLine("|the sheep that will move:   |\n");
                 Console.WriteLine(
-                    "select C2\n");
+                    "choose C2\n");
                 Console.WriteLine("|The tile selected must have |");
                 Console.WriteLine("|a sheep on it!              |");
                 Console.WriteLine("|As for the wolf, since he is|");
