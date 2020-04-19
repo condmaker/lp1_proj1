@@ -43,9 +43,9 @@ Feita inteiramente por Marco Domingos.
 O programa foi realizado com duas classes principais (não contando a *Program*), *Board* e *Tile*. 
 
 ### Classe *Board*
-A classe Board irá fazer tudo relacionado ao tabuleiro em sí-- sua construção, a organização de quadrados (chamados de *tiles* no programa, que fazem parte da outra classe *Tile*) no tabueleiro em sí a partir de um array de *Tile*s, a atualização do tabuleiro, e a colocação de *neighbours* para cada um dos tiles.
+A classe Board irá fazer tudo relacionado ao tabuleiro em sí-- sua construção, a organização de quadrados (chamados de *tiles* no programa, que fazem parte da outra classe *Tile*) no tabuleiro em sí a partir de um array de *Tile*s, a atualização do tabuleiro, e a colocação de *neighbours* para cada um dos tiles.
 
-*Neighbours*, no programa, são as *tiles* adjacentes de uma tile especifica, indicando se uma peça (ovelha ou lobo) pode ir para esta outra tile. 
+*Neighbours*, no programa, são as *tiles* adjacentes de uma tile especifica, indicando se uma peça (ovelha ou lobo) pode ir para esta outra *tile*. 
 
 Seguem aqui os métodos específicos desta classe:
 
