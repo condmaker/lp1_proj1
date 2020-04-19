@@ -368,20 +368,21 @@ namespace WolfandSheep
         }
 
         /// <summary>
-        /// 
+        /// Observes if the wolf is surrounded in his tile
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Boolean</returns>
         public bool CheckIfSurrounded()
         {
+            // Starts with the assumption that is true, verifies if its false
+            // in case any of the triggers are true
             bool isSurrounded = true;
 
-            //Check if any neighbour is empty
+            // Check if any neighbour is empty
             foreach(Tile n in this.neighbours)
             {
-                //Ignore if null
+                // Ignore if null
                 if(n == null){ continue; }
-                    
-                Console.WriteLine(n.tileState);
+
                 if(n.tileState == 0)
                 {
                     isSurrounded = false;
@@ -467,7 +468,7 @@ namespace WolfandSheep
             int turnCount = 1;
             // Stores the final game state-- if the wolf or sheep won.
             // Sheep wins is 0, Wolf loses is 1
-            ushort gameState = 0;
+            ushort gameState = 3;
             // Variable that will store the player's commands with an array of
             // strings
             string[] gameCommand;
@@ -484,9 +485,9 @@ namespace WolfandSheep
             // Asks one of the players to select the wolf's position
             Console.WriteLine(
                 "PLAYER1, please select the position for the WOLF, "  +
-                "the character you will play as. You can only choose" +
+                "the character you will play as. You can only choose " +
                 "tiles from the A row. Input the command as:\n\n"     +
-                "choose <vertical>\n\n"+
+                "choose <horizontal number>\n\n"+
                 "If you choose an invalid number on that row, the"    +
                 "will convert it to the highest possible number on "  +
                 "that row.\n");
@@ -569,6 +570,14 @@ namespace WolfandSheep
                     } 
                 }
 
+                // Checks if the wolf is surrounded
+                if (gameBoard.darkTiles[wolfNum].CheckIfSurrounded())
+                {
+                    gameState = 0;
+                    Console.WriteLine("Test");
+                    break;
+                }
+
                 // Shows the current turn to the player
                 Console.WriteLine($"\nTURN {turnCount}");
                 // Reconstructs the Game Board and shows it to the player
@@ -577,7 +586,7 @@ namespace WolfandSheep
                 if (turnCount % 2 != 0)
                 {
                     Console.WriteLine("PLAYER1 (Wolf), make your move.");
-                    Console.WriteLine("|MOVE COMMAND: <move> <tile>|");
+                    Console.WriteLine("|MOVE COMMAND: move <tile>|");
 
                     // Saves the wolf location on oldNum
                     oldNum = wolfNum;
@@ -586,9 +595,16 @@ namespace WolfandSheep
                 {
                     Console.WriteLine("PLAYER2 (Sheep), choose your sheep.");
                     Console.WriteLine(
-                        "|CHOOSE SHEEP COMMAND: <choose> <tile>|");
+                        "|CHOOSE SHEEP COMMAND: choose <tile>|");
 
                     playersInput = Console.ReadLine();
+
+                    if (playersInput == "q") 
+                    {
+                        gameState = 3;
+                        continue;
+                    }
+
                     gameCommand = playersInput.Split(" ");
 
                     if (gameCommand[0] != "choose")
@@ -622,11 +638,18 @@ namespace WolfandSheep
 
                     Console.WriteLine("Sheep Chosen!\n");
                     Console.WriteLine("PLAYER2 (Sheep), make your move.");
-                    Console.WriteLine("|MOVE COMMAND: <move> <tile>|");
+                    Console.WriteLine("|MOVE COMMAND: move <tile>|");
 
                 }
 
                 playersInput = Console.ReadLine();
+
+                if (playersInput == "q") 
+                {
+                    gameState = 3;
+                    continue;
+                }
+
                 gameCommand = playersInput.Split(" ");
 
                 if (gameCommand[0] != "move")
@@ -655,9 +678,6 @@ namespace WolfandSheep
                 tileNum = gameBoard.ConvertToArrayNumb(
                     tileNumArray[0], tileNumArray[1]);
 
-                Console.WriteLine("tilenum: " + tileNum);
-                Console.WriteLine("wolfnum: " + wolfNum);
-            
                 // With the present player tile, checks if he can go to next
                 // tile
                 if (!gameBoard.darkTiles[oldNum].CheckTileAvailability(
@@ -679,15 +699,7 @@ namespace WolfandSheep
                 {
                     gameBoard.darkTiles[oldNum].tileState = 0;
                     gameBoard.darkTiles[tileNum].tileState = 1;
-                }
-
-                // Checks if the wolf is surrounded
-                if (gameBoard.darkTiles[wolfNum].CheckIfSurrounded())
-                {
-                    gameState = 0;
-                    Console.WriteLine("Test");
-                    break;
-                }
+                }       
 
                  if (gameBoard.darkTiles[wolfNum].isInitialPos == true)
                 {
@@ -699,14 +711,14 @@ namespace WolfandSheep
                 turnCount++;
             }
 
-            gameBoard.ShowBoard();  
-
             switch(gameState)
             {
                 case 0:
+                    gameBoard.ShowBoard();
                     Console.WriteLine("PLAYER2, the sheep, wins!");
                     break;
                 case 1: 
+                    gameBoard.ShowBoard();
                     Console.WriteLine("PLAYER1, the Wolf, wins!");
                     break;
                 case 3:
