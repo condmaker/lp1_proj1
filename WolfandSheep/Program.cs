@@ -198,7 +198,7 @@ namespace WolfandSheep
             
             // Verifies if neighbour is not impossible (if it does not go off 
             // the map)
-            if(tempY >= 0 && tempY < sideNumb - 1 
+            if(tempY >= 0 && tempY < sideNumb 
             && tempX >= 0 && tempX < sideNumb/2)
             {
                 // Converts the neighbour's coordinates to an int array and
@@ -701,7 +701,7 @@ namespace WolfandSheep
                     gameBoard.darkTiles[tileNum].tileState = 1;
                 }       
 
-                 if (gameBoard.darkTiles[wolfNum].isInitialPos == true)
+                if (gameBoard.darkTiles[wolfNum].isInitialPos == true)
                 {
                     gameState = 1;
                     break;
