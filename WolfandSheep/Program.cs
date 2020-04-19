@@ -16,7 +16,8 @@ namespace WolfandSheep
         // considered as a single array, the player tackles it as a multi-
         // dimensional one
         public Tile[] darkTiles = new Tile[]{null,null,null,null,null,null,null
-        ,null,null,null,null,null,null,null,null,null,};
+        ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+        ,null,null,null,null,null,null,null,null,null,null,null};
 
         // The basic class constructor. Will construct the board
         public Board()
@@ -57,7 +58,7 @@ namespace WolfandSheep
             int tilenumb = 0;
 
             //
-            for(int i = 0; i < (sideNumb/2); i++)
+            for(int i = 0; i < (sideNumb); i++)
             {
                 bool inicialPos = false;
                 //Empty, Wolf or Sheep maybe change to enum
@@ -66,7 +67,7 @@ namespace WolfandSheep
                 for(int j = 0; j < (sideNumb/2); j++)
                 {        
                     //Sheep spawn in the first line 
-                    if(i == (sideNumb/2 - 1))
+                    if(i == (sideNumb - 1))
                     {
                         inicialPos = true;
                         state = 1;
@@ -92,9 +93,7 @@ namespace WolfandSheep
         /// Assigns the neighbours to every tile 
         /// </summary>
         public void AssignNeighbours()
-        {           
-
-            
+        {                   
             foreach(Tile t in this.darkTiles)
             {           
              
@@ -199,7 +198,7 @@ namespace WolfandSheep
             
             // Verifies if neighbour is not impossible (if it does not go off 
             // the map)
-            if(tempY >= 0 && tempY < sideNumb/2 
+            if(tempY >= 0 && tempY < sideNumb - 1 
             && tempX >= 0 && tempX < sideNumb/2)
             {
                 // Converts the neighbour's coordinates to an int array and
@@ -241,19 +240,29 @@ namespace WolfandSheep
                 if(t.x == 0 && t.y != 0)
                 {
                     Console.WriteLine("");
+                    Console.WriteLine("  |\t\t\t\t\t  |");
                     switch (t.y)
                     {
-                        case 1: 
-                            Console.WriteLine("B |\t\t\t\t\t  |");
-                            Console.Write("C"); 
+                        case 1:          
+                            Console.Write("B"); 
                             break;
                         case 2: 
-                            Console.WriteLine("D |\t\t\t\t\t  |");
-                            Console.Write("E"); 
+                            Console.Write("C"); 
                             break;
                         case 3: 
-                            Console.WriteLine("F |\t\t\t\t\t  |"); 
+                            Console.Write("D"); 
+                            break;
+                        case 4: 
+                            Console.Write("E"); 
+                            break;
+                        case 5: 
+                            Console.Write("F"); 
+                            break;
+                        case 6: 
                             Console.Write("G"); 
+                            break;
+                        case 7: 
+                            Console.Write("H"); 
                             break;
                     }
                     
@@ -282,7 +291,7 @@ namespace WolfandSheep
 
     class Tile
     {
-        bool isInitialPos;
+        public bool isInitialPos;
 
         //0 - empty / 1 - sheep / 2 - wolf 
         public int tileState;
@@ -375,7 +384,6 @@ namespace WolfandSheep
                 Console.WriteLine(n.tileState);
                 if(n.tileState == 0)
                 {
-
                     isSurrounded = false;
                 }
             }
@@ -552,7 +560,7 @@ namespace WolfandSheep
                 int wolfNum = 0;
 
                 // A for cicle to discover where is the wolf
-                for (int i = 0; i <= 15; i++)
+                for (int i = 0; i <= gameBoard.darkTiles.Length; i++)
                 {
                     if (gameBoard.darkTiles[i].tileState == 2)
                     {
@@ -665,7 +673,7 @@ namespace WolfandSheep
                 if (turnCount % 2 != 0)
                 {
                     gameBoard.darkTiles[oldNum].tileState = 0;
-                    gameBoard.darkTiles[tileNum].tileState = 2;                    
+                    gameBoard.darkTiles[tileNum].tileState = 2;             
                 }
                 else
                 {
@@ -680,13 +688,13 @@ namespace WolfandSheep
                     Console.WriteLine("Test");
                     break;
                 }
-                if( (tileNum == 12 || tileNum == 13 || tileNum == 14 ||
-                   tileNum == 15) && (turnCount % 2 != 0) )
+
+                 if (gameBoard.darkTiles[wolfNum].isInitialPos == true)
                 {
                     gameState = 1;
                     break;
                 }
-            
+
                 // Increases the turn count and goes back to the beginning
                 turnCount++;
             }
