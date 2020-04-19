@@ -576,6 +576,13 @@ namespace WolfandSheep
                     } 
                 }
 
+                //Checks if wolf has won
+                if (gameBoard.darkTiles[wolfNum].isInitialPos == true)
+                {
+                    gameState = 1;
+                    break;
+                }
+
                 // Checks if the wolf is surrounded
                 if (gameBoard.darkTiles[wolfNum].CheckIfSurrounded())
                 {
@@ -680,14 +687,7 @@ namespace WolfandSheep
                     continue;
                 }
 
-                // Makes sure that sheep can't go backwards
-                if ( (gameBoard.darkTiles[oldNum].y 
-                < gameBoard.darkTiles[tileNum].y) && turnCount % 2 == 0)
-                {
-                    Console.WriteLine(
-                        "You cannot go back as sheep. Please input again.");
-                    continue;
-                }
+
                 
                 // Converts the gameCommand coords to an array of ints
                 tileNumArray = CoordToInt(
@@ -707,6 +707,15 @@ namespace WolfandSheep
                      continue;
                 }
 
+                 // Makes sure that sheep can't go backwards
+                if ( (gameBoard.darkTiles[oldNum].y 
+                < gameBoard.darkTiles[tileNum].y) && turnCount % 2 == 0)
+                {
+                    Console.WriteLine(
+                        "You cannot go back as sheep. Please input again.");
+                    continue;
+                }
+
                 // Assigns tile state depending if the wolf or sheep made the
                 // play, and resets old tile state
                 if (turnCount % 2 != 0)
@@ -719,12 +728,6 @@ namespace WolfandSheep
                     gameBoard.darkTiles[oldNum].tileState = 0;
                     gameBoard.darkTiles[tileNum].tileState = 1;
                 }       
-
-                if (gameBoard.darkTiles[wolfNum].isInitialPos == true)
-                {
-                    gameState = 1;
-                    break;
-                }
 
                 // Increases the turn count and goes back to the beginning
                 turnCount++;
